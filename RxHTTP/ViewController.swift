@@ -7,12 +7,30 @@
 //
 
 import UIKit
+import RxSwift
+
+struct BlogPost : Decodable {
+    var userId:Int
+    var title:String
+    var body:String
+}
 
 class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        let _ = http.get(url: "https://jsonplaceholder.typicode.com/posts/1")
+            .subscribe(
+                onNext: {(p:BlogPost) in print("Title: \(p.title)")},
+                onError: { err in NSLog("Error: %@", String(describing: err))}
+        )
+        //Array test
+        let _ = http.get(url: "https://jsonplaceholder.typicode.com/posts")
+            .subscribe(
+                onNext: {(p:[BlogPost]) in print("Count: \(p.count)")},
+                onError: { err in NSLog("Error: %@", String(describing: err))}
+            )
     }
 
     override func didReceiveMemoryWarning() {

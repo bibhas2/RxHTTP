@@ -7,14 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		490173FB210FBEF1003F9211 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 490173FA210FBEF1003F9211 /* RxSwift.framework */; };
 		49577FC1210FBB140027DBED /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49577FC0210FBB140027DBED /* AppDelegate.swift */; };
 		49577FC3210FBB140027DBED /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49577FC2210FBB140027DBED /* ViewController.swift */; };
 		49577FC6210FBB140027DBED /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49577FC4210FBB140027DBED /* Main.storyboard */; };
 		49577FC8210FBB150027DBED /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 49577FC7210FBB150027DBED /* Assets.xcassets */; };
 		49577FCB210FBB150027DBED /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49577FC9210FBB150027DBED /* LaunchScreen.storyboard */; };
+		49577FD3210FBB5D0027DBED /* http.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49577FD2210FBB5D0027DBED /* http.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		490173FA210FBEF1003F9211 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
 		49577FBD210FBB140027DBED /* RxHTTP.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RxHTTP.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		49577FC0210FBB140027DBED /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		49577FC2210FBB140027DBED /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -22,6 +25,7 @@
 		49577FC7210FBB150027DBED /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		49577FCA210FBB150027DBED /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		49577FCC210FBB150027DBED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		49577FD2210FBB5D0027DBED /* http.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = http.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,17 +33,27 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				490173FB210FBEF1003F9211 /* RxSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		490173F9210FBEF1003F9211 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				490173FA210FBEF1003F9211 /* RxSwift.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		49577FB4210FBB140027DBED = {
 			isa = PBXGroup;
 			children = (
 				49577FBF210FBB140027DBED /* RxHTTP */,
 				49577FBE210FBB140027DBED /* Products */,
+				490173F9210FBEF1003F9211 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -60,6 +74,7 @@
 				49577FC7210FBB150027DBED /* Assets.xcassets */,
 				49577FC9210FBB150027DBED /* LaunchScreen.storyboard */,
 				49577FCC210FBB150027DBED /* Info.plist */,
+				49577FD2210FBB5D0027DBED /* http.swift */,
 			);
 			path = RxHTTP;
 			sourceTree = "<group>";
@@ -74,6 +89,7 @@
 				49577FB9210FBB140027DBED /* Sources */,
 				49577FBA210FBB140027DBED /* Frameworks */,
 				49577FBB210FBB140027DBED /* Resources */,
+				490173FC210FBF29003F9211 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -130,6 +146,23 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		490173FC210FBF29003F9211 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/RxSwift.framework",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		49577FB9210FBB140027DBED /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -137,6 +170,7 @@
 			files = (
 				49577FC3210FBB140027DBED /* ViewController.swift in Sources */,
 				49577FC1210FBB140027DBED /* AppDelegate.swift in Sources */,
+				49577FD3210FBB5D0027DBED /* http.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,7 +314,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = RxHTTP/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -288,6 +327,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.rccl.RxHTTP;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -297,7 +337,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = RxHTTP/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -305,6 +350,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.rccl.RxHTTP;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
