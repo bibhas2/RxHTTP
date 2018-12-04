@@ -7,35 +7,77 @@ struct WSResponse {
 }
 
 class http: NSObject {
-    class func get<T : Decodable>(url:String) -> Observable<T> {
-        return execute(url: url, method: "GET", body: nil, headers: nil)
+    var headers: [String:String] = [:]
+    var method: String
+    var url: String
+    var body : Data?
+    var retryCount: Int = 3
+    var retryInterval: Double = 5.0 //Seconds
+    
+    init(method:String, url:String) {
+        self.method = method
+        self.url = url
+    }
+    
+    class func get(url: String) -> http {
+        return http(method: "GET", url: url)
+    }
+    
+    class func post(url: String) -> http {
+        return http(method: "POST", url: url)
     }
 
-    class func post<T_in : Encodable, T_out : Decodable>(url:String, body : T_in) -> Observable<T_out> {
-        return execute(url: url, method: "POST", body: body)
+    class func post<T : Encodable>(url:String, body: T) -> http {
+        return post(url: url).withBody(body)
+    }
+
+    class func put(url:String) -> http {
+        return http(method: "PUT", url: url)
     }
     
-    class func put<T_in : Encodable, T_out : Decodable>(url:String, body : T_in) -> Observable<T_out> {
-        return execute(url: url, method: "PUT", body: body)
+    class func put<T : Encodable>(url:String, body: T) -> http {
+        return put(url: url).withBody(body)
     }
-    
-    class func execute<T_in : Encodable, T_out : Decodable>(url:String, method:String, body : T_in, headers: [String:String]? = nil) -> Observable<T_out> {
-        let encoder = JSONEncoder()
-        let bodyData = try? encoder.encode(body)
+
+    class func delete(url:String) -> http {
+        return http(method: "DELETE", url: url)
+    }
+
+    func withHeader(name: String, value: String) -> http {
+        headers[name] = value
         
-        return execute(url: url, method: method, body: bodyData, headers: headers)
+        return self
+    }
+
+    func withBody<T : Encodable>(_ body: T) -> http {
+        let encoder = JSONEncoder()
+        self.body = try? encoder.encode(body)
+        
+        return self
+    }
+
+    func withRetryCount(_ retryCount: Int) -> http {
+        self.retryCount = retryCount
+        
+        return self
     }
     
-    class func execute<T : Decodable>(url:String, method:String, body : Data? = nil, headers: [String:String]? = nil) -> Observable<T> {
-        return execute(url: url, method: method, body: body, headers: headers).map({ (r:WSResponse) -> T in
+    func withRetryInterval(_ retryInterval: Double) -> http {
+        self.retryInterval = retryInterval
+        
+        return self
+    }
+    
+    func execute<T : Decodable>() -> Observable<T> {
+        return execute().map({ (r:WSResponse) -> T in
             let decoder = JSONDecoder()
             let obj : T = try decoder.decode(T.self, from: r.raw!)
             
             return obj
         })
     }
-    
-    class func execute(url:String, method:String, body : Data? = nil, headers: [String:String]? = nil) -> Observable<WSResponse> {
+ 
+    func execute() -> Observable<WSResponse> {
         let _url = URL(string:
             url.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!)!
         
@@ -56,10 +98,8 @@ class http: NSObject {
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         }
         
-        if let headers = headers {
-            for (headerName, headerValue) in headers {
-                request.addValue(headerValue, forHTTPHeaderField: headerName)
-            }
+        for (headerName, headerValue) in headers {
+            request.addValue(headerValue, forHTTPHeaderField: headerName)
         }
         
         var observable = Observable<WSResponse>.create({ (observer) -> Disposable in
@@ -84,15 +124,16 @@ class http: NSObject {
             return Disposables.create()
         })
         
-        if method == "GET" {
+        //Retry GET requests
+        if method == "GET" && retryCount > 0 {
             observable = observable.retryWhen({ errObs -> Observable<Int> in
-                var retryCount = 0
+                var _retryCount = 0
                 
-                return Observable<Int>.interval(5, scheduler: SerialDispatchQueueScheduler(qos: .default))
+                return Observable<Int>.interval(self.retryInterval, scheduler: SerialDispatchQueueScheduler(qos: .default))
                     .flatMap({ (counter:Int) -> Observable<Int> in
-                        retryCount += 1
+                        _retryCount += 1
                         
-                        if (retryCount > 2) {
+                        if (_retryCount > self.retryCount) {
                             return Observable<Int>.error(NSError(domain: "RxHTTP", code: 0, userInfo: ["message" : "Maximum retry count reached"]))
                         }
                         
