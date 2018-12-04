@@ -20,13 +20,13 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let _ = http.get(url: "https://jsonplaceholder.typicode.com/posts/1")
+        let _ = http.get(url: "https://jsonplaceholder.typicode.com/posts/1").execute()
             .subscribe(
                 onNext: {(p:BlogPost) in print("Title: \(p.title)")},
                 onError: { err in NSLog("Error: %@", String(describing: err))}
         )
         //Array test
-        let _ = http.get(url: "https://jsonplaceholder.typicode.com/posts")
+        let _ = http.get(url: "https://jsonplaceholder.typicode.com/posts").execute()
             .subscribe(
                 onNext: {(p:[BlogPost]) in print("Count: \(p.count)")},
                 onError: { err in NSLog("Error: %@", String(describing: err))}
