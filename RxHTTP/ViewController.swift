@@ -26,7 +26,7 @@ class ViewController: UIViewController {
                 onError: { err in NSLog("Error: %@", String(describing: err))}
         )
         //Array test
-        let _ = http.get(url: "https://jsonplaceholder.typicode.com/posts").execute()
+        let _ = http.get(url: "https://jsonplaceholder.typicode.com/posts?userId=1").execute()
             .subscribe(
                 onNext: {(p:[BlogPost]) in print("Count: \(p.count)")},
                 onError: { err in NSLog("Error: %@", String(describing: err))}
