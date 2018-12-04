@@ -19,11 +19,11 @@ class http: NSObject {
         self.url = url
     }
     
-    class func get(url:String) -> http {
+    class func get(url: String) -> http {
         return http(method: "GET", url: url)
     }
     
-    class func post(url:String) -> http {
+    class func post(url: String) -> http {
         return http(method: "POST", url: url)
     }
 
