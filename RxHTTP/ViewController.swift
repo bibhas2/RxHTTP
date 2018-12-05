@@ -45,6 +45,24 @@ class ViewController: UIViewController {
                 onError: { err in NSLog("Error: %@", String(describing: err))}
         )
 
+        //Raw response test
+        let _ = http.get(url: "https://httpbin.org/html")
+            .execute()
+            .subscribe(
+                onNext: {(r: WSResponse) in
+                    let response: HTTPURLResponse = r.response
+                    
+                    NSLog("Status code: %d", response.statusCode)
+                    NSLog("Content type: %@", response.allHeaderFields["Content-Type"] as! String)
+                    
+                    if let body = r.raw, let html = String(bytes: body, encoding: .utf8) {
+                        NSLog("HTML: %@", html)
+                    }
+                },
+                onError: { err in NSLog("Error: %@", String(describing: err))}
+        )
+
+        
         //Invalid status code test
         let _ = http.get(url: "https://jsonplaceholder.typicode.com/posts/BAD-JUJU")
             .execute()
