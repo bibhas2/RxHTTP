@@ -20,7 +20,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         let _ = http.get(url: "https://jsonplaceholder.typicode.com/posts/1")
             .execute()
             .subscribe(
@@ -42,6 +42,22 @@ class ViewController: UIViewController {
             .execute()
             .subscribe(
                 onNext: {(p:BlogPost) in print("ID: \(p.id)")},
+                onError: { err in NSLog("Error: %@", String(describing: err))}
+        )
+
+        //Invalid status code test
+        let _ = http.get(url: "https://jsonplaceholder.typicode.com/posts/BAD-JUJU")
+            .execute()
+            .subscribe(
+                onNext: {(p:BlogPost) in print("Title: \(p.title)")},
+                onError: { err in NSLog("Error: %@", "\(err.localizedDescription)")}
+        )
+
+        //Retry test
+        let _ = http.get(url: "https://BAD-HOST-jsonplaceholder.typicode.com/posts/1")
+            .execute()
+            .subscribe(
+                onNext: {(p:BlogPost) in print("Title: \(p.title)")},
                 onError: { err in NSLog("Error: %@", String(describing: err))}
         )
     }

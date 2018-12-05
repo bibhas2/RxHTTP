@@ -74,7 +74,18 @@ class http: NSObject {
     }
     
     func execute<T : Decodable>() -> Observable<T> {
-        return execute().map({ (r:WSResponse) -> T in
+        return execute().map({ (r: WSResponse) -> T in
+            
+            //Do not decode JSON if bad response code
+            if (r.response.statusCode >= 400) {
+                throw NSError(domain: "WS",
+                              code: r.response.statusCode,
+                              userInfo: [
+                                "message" : "Invalid status code: \(r.response.statusCode)",
+                                "WSResponse": r
+                              ])
+            }
+ 
             let decoder = JSONDecoder()
             let obj : T = try decoder.decode(T.self, from: r.raw!)
             
@@ -112,11 +123,7 @@ class http: NSObject {
                 if (error == nil) {
                     let httpsResponse = response as! HTTPURLResponse
                     
-                    if (httpsResponse.statusCode < 400) {
-                        observer.on(.next(WSResponse(raw: data, response:httpsResponse)))
-                    } else {
-                        observer.on(.error(NSError(domain: "WS", code: httpsResponse.statusCode, userInfo: ["message" :"Invalid status code: \(httpsResponse.statusCode)"])))
-                    }
+                    observer.on(.next(WSResponse(raw: data, response:httpsResponse)))
                 } else {
                     observer.on(.error(error!))
                 }
