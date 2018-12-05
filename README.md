@@ -1,5 +1,5 @@
 ## Introduction
-RxHTTP is a HTTP client lirary written in Swift. It uses RxSwift for asynchronous programming.
+RxHTTP is a HTTP client library written in Swift. It uses RxSwift for asynchronous programming.
 
 ## Main Features
 
