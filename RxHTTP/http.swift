@@ -13,6 +13,7 @@ class http: NSObject {
     var body : Data?
     var retryCount: Int = 3
     var retryInterval: Double = 5.0 //Seconds
+    var retryError: Error?
     
     init(method:String, url:String) {
         self.method = method
@@ -51,7 +52,12 @@ class http: NSObject {
 
     func withBody<T : Encodable>(_ body: T) -> http {
         let encoder = JSONEncoder()
-        self.body = try? encoder.encode(body)
+        
+        do {
+            self.body = try encoder.encode(body)
+        } catch {
+            NSLog("%@", "Failed to encode to JSON. \(error)")
+        }
         
         return self
     }
@@ -129,12 +135,19 @@ class http: NSObject {
             observable = observable.retryWhen({ errObs -> Observable<Int> in
                 var _retryCount = 0
                 
+                //Save the error that is happening so we can deliver that
+                //when retry finishes
+                errObs.subscribe(onNext: {(e:Error) in self.retryError = e},
+                                 onError: { err in self.retryError = err})
+                
                 return Observable<Int>.interval(self.retryInterval, scheduler: SerialDispatchQueueScheduler(qos: .default))
                     .flatMap({ (counter:Int) -> Observable<Int> in
                         _retryCount += 1
                         
                         if (_retryCount > self.retryCount) {
-                            return Observable<Int>.error(NSError(domain: "RxHTTP", code: 0, userInfo: ["message" : "Maximum retry count reached"]))
+                            let errToReport = self.retryError ?? NSError(domain: "RxHTTP", code: 0, userInfo: ["message" : "Maximum retry count reached"])
+                            
+                            return Observable<Int>.error(errToReport)
                         }
                         
                         return Observable<Int>.of(counter)
