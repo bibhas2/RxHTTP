@@ -13,7 +13,6 @@ class http: NSObject {
     var body : Data?
     var retryCount: Int = 3
     var retryInterval: Double = 5.0 //Seconds
-    var retryError: Error?
     
     init(method:String, url:String) {
         self.method = method
@@ -132,20 +131,25 @@ class http: NSObject {
         
         //Retry GET requests
         if method == "GET" && retryCount > 0 {
+            var retryError: Error?
+            
             observable = observable.retryWhen({ errObs -> Observable<Int> in
                 var _retryCount = 0
                 
                 //Save the error that is happening so we can deliver that
                 //when retry finishes
-                errObs.subscribe(onNext: {(e:Error) in self.retryError = e},
-                                 onError: { err in self.retryError = err})
+                let retrySubscription = errObs.subscribe(
+                    onNext: {(e:Error) in retryError = e},
+                    onError: { err in retryError = err})
                 
                 return Observable<Int>.interval(self.retryInterval, scheduler: SerialDispatchQueueScheduler(qos: .default))
                     .flatMap({ (counter:Int) -> Observable<Int> in
                         _retryCount += 1
                         
                         if (_retryCount > self.retryCount) {
-                            let errToReport = self.retryError ?? NSError(domain: "RxHTTP", code: 0, userInfo: ["message" : "Maximum retry count reached"])
+                            let errToReport = retryError ?? NSError(domain: "RxHTTP", code: 0, userInfo: ["message" : "Maximum retry count reached"])
+                            
+                            retrySubscription.dispose() //Unsubscribe
                             
                             return Observable<Int>.error(errToReport)
                         }
